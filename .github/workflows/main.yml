@@ -25,12 +25,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.9'
-    - name: Setup Dependencies
-      run: |
-        go get github.com/daviddengcn/go-colortext
-        go get github.com/subosito/gotenv
-        go get golang.org/x/crypto/ssh/terminal
+        go-version: '1.14'
     - name: Build
       run: make build
     - name: Test
