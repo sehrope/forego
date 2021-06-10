@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - '*'
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-      - README
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - '*'
@@ -16,15 +14,35 @@ on:
       - '**/*.md'
 
 jobs:
+  matrix_prep:
+    name: Matrix Preparation
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.setup.outputs.matrix }}
+    env:
+      MATRIX_GENERATION_NODE_JS_SCRIPT: |
+        const timestamp = new Date().toISOString().replace(/[\-\:\.]/g, '');
+        const VERSION_REGEX = /^refs\/tags\/(v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*))$/;
+        const tag = (VERSION_REGEX.exec(process.env.GITHUB_REF) || ['', 'dev'])[1];
+        const hash = process.env.GITHUB_SHA;
+        const include = [
+          {timestamp, tag, hash, name: 'linux', os: 'ubuntu-latest' },
+          {timestamp, tag, hash, name: 'windows', os: 'windows-latest' },
+          {timestamp, tag, hash, name: 'macos', os: 'macos-latest' },
+        ];
+        console.log('::set-output name=matrix::' + JSON.stringify({ include }));
+    steps:
+      - id: setup
+        run: node -e "${MATRIX_GENERATION_NODE_JS_SCRIPT}"
+
   test:
-    name: Test - ${{ matrix.os }}
+    name: Test - ${{ matrix.name }}
+    needs: matrix_prep
+    env:
+      BUILD_TAG: ${{ matrix.tag }}-${{ matrix.timestamp }}-${{ matrix.hash }}
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        os:
-        - 'ubuntu-latest'
-        - 'windows-latest'
-        - 'macos-latest'
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -33,6 +51,18 @@ jobs:
       with:
         go-version: '1.14'
     - name: Build
-      run: make build
+      run: make "VERSION=${BUILD_TAG}" build
+    - name: Version
+      run: ./forego version
     - name: Test
       run: make test
+    - name: Release Prep
+      if: startsWith(matrix.tag, 'v')
+      run: mv forego forego-${{ matrix.tag }}-${{ matrix.name }}-${{ matrix.timestamp }}
+    - name: Release
+      if: startsWith(matrix.tag, 'v')
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: forego-*
