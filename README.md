@@ -1,18 +1,18 @@
 ## forego
 
-<a href="https://circleci.com/gh/ddollar/forego">
-  <img align="right" src="https://circleci.com/gh/ddollar/forego.svg?style=svg">
-</a>
-
 [Foreman](https://github.com/ddollar/foreman) in Go.
+
+This project was forked from https://github.com/ddollar/forego.
 
 ### Installation
 
-[Downloads](https://dl.equinox.io/ddollar/forego/stable)
+Pre-built binaries for Linux, OSX, and Windows are available for download: https://github.com/sehrope/forego/releases
 
-##### Compile from Source
+#### Compile from Source
 
-    $ go get -u github.com/ddollar/forego
+Clone this repo and build via:
+
+    $ make
 
 ### Usage
 
@@ -30,3 +30,5 @@ Use `forego help` to get a list of available commands, and `forego help
 ### License
 
 Apache 2.0 &copy; 2015 David Dollar
+
+Apache 2.0 &copy; 2020 Sehrope Sarkuni
