@@ -21,6 +21,7 @@ const defaultShutdownGraceTime = 3
 var flagPort int
 var flagConcurrency string
 var flagRestart bool
+var flagQuiet bool
 var flagShutdownGraceTime int
 var envs envFiles
 var colorize bool
@@ -56,6 +57,10 @@ The following options are available:
   -r           Restart a process which exits. Without this, if a process exits,
                forego will kill all other processes and exit.
 
+  -q           Enable quiet mode. This disables printing of internal non-error
+               messages and disables prefixing the process name to stdout and
+               stderr log output.
+
   -t shutdown_grace_time
                Set the shutdown grace time that each process is given after
                being asked to stop. Once this grace time expires, the process is
@@ -89,6 +94,7 @@ func init() {
 	cmdStart.Flag.StringVar(&flagConcurrency, "c", "", "concurrency")
 	cmdStart.Flag.BoolVar(&flagRestart, "r", false, "restart")
 	cmdStart.Flag.IntVar(&flagShutdownGraceTime, "t", defaultShutdownGraceTime, "shutdown grace time")
+	cmdStart.Flag.BoolVar(&flagQuiet, "q", false, "quiet")
 	err := readConfigFile(".forego", &flagProcfile, &flagPort, &flagConcurrency, &flagShutdownGraceTime)
 	handleError(err)
 	colorize = os.Getenv("NO_COLOR") == "" && terminal.IsTerminal(int(os.Stdout.Fd()))
