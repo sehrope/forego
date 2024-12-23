@@ -49,7 +49,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.14'
+        go-version: '1.22'
     - name: Build
       run: make "VERSION=${BUILD_TAG}" build
     - name: Version
