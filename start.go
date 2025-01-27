@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 const defaultPort = 5000
@@ -97,7 +97,7 @@ func init() {
 	cmdStart.Flag.BoolVar(&flagQuiet, "q", false, "quiet")
 	err := readConfigFile(".forego", &flagProcfile, &flagPort, &flagConcurrency, &flagShutdownGraceTime)
 	handleError(err)
-	colorize = os.Getenv("NO_COLOR") == "" && terminal.IsTerminal(int(os.Stdout.Fd()))
+	colorize = os.Getenv("NO_COLOR") == "" && term.IsTerminal(int(os.Stdout.Fd()))
 }
 
 func readConfigFile(config_path string, flagProcfile *string, flagPort *int, flagConcurrency *string, flagShutdownGraceTime *int) error {
