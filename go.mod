@@ -1,6 +1,6 @@
 module github.com/ddollar/forego
 
-go 1.22
+go 1.24.1
 
 require (
 	github.com/daviddengcn/go-colortext v1.0.0
