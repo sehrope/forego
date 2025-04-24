@@ -61,7 +61,7 @@ jobs:
       run: mv forego forego-${{ matrix.tag }}-${{ matrix.name }}-${{ matrix.timestamp }}
     - name: Release
       if: startsWith(matrix.tag, 'v')
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # 2.2.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
