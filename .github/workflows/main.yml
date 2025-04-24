@@ -47,9 +47,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # 5.4.0
       with:
-        go-version: '1.22'
+        go-version-file: 'go.mod'
     - name: Build
       run: make "VERSION=${BUILD_TAG}" build
     - name: Version
