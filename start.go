@@ -23,12 +23,13 @@ var flagConcurrency string
 var flagRestart bool
 var flagQuiet bool
 var flagShutdownGraceTime int
+var flagSplitStreams bool
 var envs envFiles
 var colorize bool
 
 var cmdStart = &Command{
 	Run:   runStart,
-	Usage: "start [process name] [-f procfile] [-e env] [-p port] [-c concurrency] [-r] [-t shutdown_grace_time]",
+	Usage: "start [process name] [-f procfile] [-e env] [-p port] [-c concurrency] [-r] [-t shutdown_grace_time] [-s]",
 	Short: "Start the application",
 	Long: `
 Start the application specified by a Procfile. The directory containing the
@@ -66,6 +67,10 @@ The following options are available:
                being asked to stop. Once this grace time expires, the process is
                forcibly terminated. By default, it is 3 seconds.
 
+  -s           Split stdout and stderr streams. When enabled, stdout and stderr
+               from child processes are written to the corresponding streams of
+               the parent process. By default, both streams are merged to stdout.
+
 If there is a file named .forego in the current directory, it will be read in
 the same way as an environment file, and the values of variables procfile, port,
 concurrency, and shutdown_grace_time used to change the corresponding default
@@ -95,6 +100,7 @@ func init() {
 	cmdStart.Flag.BoolVar(&flagRestart, "r", false, "restart")
 	cmdStart.Flag.IntVar(&flagShutdownGraceTime, "t", defaultShutdownGraceTime, "shutdown grace time")
 	cmdStart.Flag.BoolVar(&flagQuiet, "q", false, "quiet")
+	cmdStart.Flag.BoolVar(&flagSplitStreams, "s", false, "split stdout and stderr streams")
 	err := readConfigFile(".forego", &flagProcfile, &flagPort, &flagConcurrency, &flagShutdownGraceTime)
 	handleError(err)
 	colorize = os.Getenv("NO_COLOR") == "" && term.IsTerminal(int(os.Stdout.Fd()))

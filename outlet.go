@@ -79,11 +79,17 @@ func (of *OutletFactory) WriteLine(left, right string, leftC, rightC ct.Color, i
 	of.Lock()
 	defer of.Unlock()
 
+	// When split-streams is enabled and it's an error, write to stderr
+	output := os.Stdout
+	if flagSplitStreams && isError {
+		output = os.Stderr
+	}
+
 	if !flagQuiet {
 		if colorize {
 			ct.ChangeColor(leftC, true, ct.None, false)
 		}
-		fmt.Printf(of.LeftFormatter, left)
+		fmt.Fprintf(output, of.LeftFormatter, left)
 	}
 
 	if colorize {
@@ -93,7 +99,7 @@ func (of *OutletFactory) WriteLine(left, right string, leftC, rightC ct.Color, i
 			ct.ResetColor()
 		}
 	}
-	fmt.Println(right)
+	fmt.Fprintln(output, right)
 	if colorize && isError {
 		ct.ResetColor()
 	}
